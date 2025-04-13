@@ -29,12 +29,14 @@ export class ResumeController {
       },
     }),
   )
-  async uploadResume(@UploadedFile() file: Express.Multer.File, @Req() req) {
+  //needs resume, jobRole
+  async uploadResume(@UploadedFile() file: Express.Multer.File, @Req() req,  @Body('jobRole') jobRole: string,
+  @Body('atsScore') atsScoreRaw: string,) {
     try {
       const userId = req.user.id; // Extract user ID from token
-      const jobRole = req.body.jobRole || null;
+      const atsScore = atsScoreRaw ? parseFloat(atsScoreRaw) : undefined;
 
-      const response = await this.resumeService.uploadResume(file, userId, jobRole);
+      const response = await this.resumeService.uploadResume(file, userId, jobRole, atsScore);
       return response;
     } catch (error) {
       throw new HttpException(
@@ -44,20 +46,20 @@ export class ResumeController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('link-to-job')
-  async linkResumeToJob(
-    @Body() body: { atsScore: number; jobRole: string; jobId: string },
-    @Req() req: Express.Request,
-  ) {
-    const user = req.user;
+  // @UseGuards(JwtAuthGuard)
+  // @Post('link-to-job')
+  // async linkResumeToJob(
+  //   @Body() body: { atsScore: number; jobRole: string; jobId: string },
+  //   @Req() req: Express.Request,
+  // ) {
+  //   const user = req.user;
 
-    if (user.role !== 'JOB_SEEKER') {
-      throw new ForbiddenException('Only job seekers can submit resumes to jobs.');
-    }
+  //   if (user.role !== 'JOB_SEEKER') {
+  //     throw new ForbiddenException('Only job seekers can submit resumes to jobs.');
+  //   }
 
-    return this.resumeService.linkResumeToJob(user.id, body.jobId, body.atsScore, body.jobRole);
-  }
+  //   return this.resumeService.linkResumeToJob(user.id, body.jobId, body.atsScore, body.jobRole);
+  // }
 
 
   @Get('get-resume')

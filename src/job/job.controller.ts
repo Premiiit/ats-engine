@@ -40,6 +40,16 @@ export class JobController {
     async getAllJobs() {
         return this.jobService.getAllJobs();
     }
+    //get top 5 jobs by atsScore
+    @UseGuards(JwtAuthGuard)
+    @Get(':jobId/resumes')
+    async getResumesForJob(
+        @Param('jobId') jobId: string,
+        @Req() req: Request
+    ) {
+        const user = req.user as { id: string; role: string };
+        return this.jobService.getResumesForJob(jobId, user.id);
+    }
 
     //attach the id of the job in the url to be deleted
     @UseGuards(JwtAuthGuard)

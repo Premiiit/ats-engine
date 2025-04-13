@@ -37,6 +37,7 @@ export class AuthService {
     }
     return {
       success: true,
+      role: user.role,
       token: this.generateToken(user)
     };
   }
